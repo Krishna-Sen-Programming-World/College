@@ -13,8 +13,9 @@ int main()
         printf("\t%d",arr[i][j]);
         printf("\n");
     }
+    
     for(int i=0;i<3;i++){
-        int max=arr[i][0];
+        int max=arr[0][i];
         int id=0;
         for(int j=1;j<5;j++){
             if(max<arr[j][i]){
