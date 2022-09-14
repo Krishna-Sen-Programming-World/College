@@ -2,4 +2,5 @@
 <li>Run code marks.c in (" https://onlinegdb.com/GnuwOuBwBD ")</li>
 <li>Run code transpose.c in (" https://onlinegdb.com/18WN9q_Sy ")</li>
 <li>Run code diognal_martix.c in (" https://onlinegdb.com/ssrsZIUnw ") </li>
+<li>Run code stack.c in (" https://onlinegdb.com/wgjgNhEHH ") </li>
 </ol>
