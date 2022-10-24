@@ -1,34 +1,30 @@
 #include<stdio.h>
-int stack[100];
-int queue[100];
+int stack1[100];
+int stack2[100];
 int top=-1,size;
-void push_s()
+void push_s1()
 {
-    if(top==size)
-    printf("Overflow");
+    if(top==size-1)
+    printf("Overflow\n");
     else{
         int x;
         printf("\nEnter the value ");
         scanf("%d",&x);
-        stack[++top]=x;
+        stack1[++top]=x;
     }
 }
 
 
-void push_q(){
+void push_s2(){
     for(int i=0,j=top;j>=0;j--,i++)
-    queue[i]=stack[j];
+    stack2[j]=stack1[i];
 }
 
 
 void push_qstack(){
-    for(int i=0;i<top;i++)
-    stack[i]=queue[i+1];
+    for(int i=0,j=top-1;i<=top-1;j--,i++)
+    stack1[j]=stack2[i];
     top--;
-    printf("\nThe stack now is : ");
-    for(int i=0;i<=top;i++)
-    printf("%d ",stack[i]);
-
 }
 
 
@@ -36,8 +32,8 @@ void pop_queue(){
     if(top==-1)
     printf("underflow");
     else{
-        push_q();
-        printf("Value popped is %d",queue[0]);
+        push_s2();
+        printf("Value popped is %d",stack2[top]);
         push_qstack();
     }
 }
@@ -53,7 +49,7 @@ int main()
         scanf("%d",&ch);
         switch(ch){
             case 1:
-            push_s();
+            push_s1();
             break;
             case 2:
             pop_queue();
