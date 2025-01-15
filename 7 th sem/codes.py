@@ -213,7 +213,7 @@ print(y_pred)
 # Evaluate the model
 accuracy = accuracy_score(y_pred, y_test)
 print(f"Accuracy: {accuracy:.2f}")
-
+# Radius Basis Funcrion RBF Kernel SVM
 clf2=SVC(kernel='rbf')
 clf2.fit(X_train, y_train.values.ravel())
 # Make predictions
