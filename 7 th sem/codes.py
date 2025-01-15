@@ -58,7 +58,7 @@ YearsExperience,Salary
 2.2,39891.00
 2.9,56642.00
 '''
-# Code 1.2
+# Code 1.2 Simple Linear Regression
 import numpy as np
 import matplotlib.pyplot as plt
 
