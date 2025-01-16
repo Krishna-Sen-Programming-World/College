@@ -125,3 +125,66 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+### Linear Regression(0)
+'''
+bda(L) 0
+
+a. Generate 10 random values between 1 to 50 as x1, x2,..., x10
+
+b. Generate 10 random values between 100 to 200 as y1, y2, ..., y10
+
+c. Plot the points (x1, y1), (x2, y2), ..., (x10, y10) [output-1]
+
+d. Fit a regression line using the library of scikit_learn and plot the line along with the points [output-2]
+
+e. Display the y value of a data point whose x value is 60 [output-3]
+'''
+Solution:
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+
+# a. Generate 10 random values between 1 to 50 as x1, x2, ..., x10
+x = np.random.randint(1, 51, 10)
+
+# b. Generate 10 random values between 100 to 200 as y1, y2, ..., y10
+y = np.random.randint(100, 201, 10)
+
+# c. Plot the points (x1, y1), (x2, y2), ..., (x10, y10)
+plt.scatter(x, y, color='blue', label='Data points')
+plt.title('Scatter Plot of Data Points')
+plt.xlabel('X values')
+plt.ylabel('Y values')
+plt.legend()
+plt.show()
+
+# d. Fit a regression line using scikit-learn and plot the line along with the points
+x_reshaped = x.reshape(-1, 1)  # Reshape x to be a 2D array for the model
+model = LinearRegression()
+model.fit(x_reshaped, y)
+
+# Predict y values using the model
+y_pred = model.predict(x_reshaped)
+
+# Plotting the points and the regression line
+plt.scatter(x, y, color='blue', label='Data points')
+plt.plot(x, y_pred, color='red', label='Regression Line')
+plt.title('Regression Line and Data Points')
+plt.xlabel('X values')
+plt.ylabel('Y values')
+plt.legend()
+plt.show()
+
+# e. Display the y value for a data point with x = 60
+x_new = np.array([[60]])  # New data point for which we want to predict y
+y_new = model.predict(x_new)
+
+# Output the predicted y value
+print(f"The predicted y value for x = 60 is: {y_new[0]}")
