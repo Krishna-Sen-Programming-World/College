@@ -82,3 +82,84 @@ LP001087,Female,No,2,Graduate,,3750,2083.0,120.0,360.0,1.0,Semiurban,Y
 LP001095,Male,No,0,Graduate,No,3167,0.0,74.0,360.0,1.0,Urban,N
 LP001097,Male,No,1,Graduate,Yes,4692,0.0,106.0,360.0,1.0,Rural,N
 '''
+
+
+
+
+###problem 2  (K-Mean Clusstering)
+'''
+Write a python program to implement the K-Means clustering algorithm, as per the following details
+a. Use the 'make_blobs' function to create a 2-dimensional data set containing 1000 data points,
+b. Number of clusters is the number of zeros in your ID
+c. Display the dataset using a scatter plot [output-1]-
+d. Initialize the centroids as the equal partitioning points of the range along each dimension le, if the minimum and maximum values along a dimension are -1 and +15 then the centroids will be placed at 3, 7 and 11.
+e. Plot the initial position of the centroids [output-2]
+f. Keep on iterating until not a single data point is getting shifted from one cluster to other.
+g. Plot the initial position of the centroids [output-3]
+'''
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
+
+# Step 1: Create a 2D dataset with 1000 data points
+n_samples = 1000
+X, _ = make_blobs(n_samples=n_samples, centers=3, cluster_std=1.0, random_state=42)
+
+# Step 2: Number of clusters (replace 'your_id' with your actual ID)
+# For example, if your ID has two zeros, set n_clusters = 2
+n_clusters = 2  # Change this according to the number of zeros in your ID
+
+# Step 3: Display the dataset using a scatter plot
+plt.scatter(X[:, 0], X[:, 1], s=30)
+plt.title('Generated Data Points')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.show()
+
+# Step 4: Initialize centroids
+min_val = X.min(axis=0)
+max_val = X.max(axis=0)
+centroids = np.linspace(min_val, max_val, n_clusters)
+
+# Step 5: Plot the initial position of the centroids
+plt.scatter(X[:, 0], X[:, 1], s=30)
+plt.scatter(centroids[:, 0], centroids[:, 1], color='red', marker='x', s=200)
+plt.title('Initial Centroid Positions')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.show()
+
+# Step 6: K-Means Algorithm
+def k_means(X, centroids):
+    while True:
+        # Assign clusters based on closest centroid
+        distances = np.linalg.norm(X[:, np.newaxis] - centroids, axis=2)
+        labels = np.argmin(distances, axis=1)
+
+        # Calculate new centroids
+        new_centroids = np.array([X[labels == k].mean(axis=0) for k in range(n_clusters)])
+
+        # Check for convergence (if centroids do not change)
+        if np.all(centroids == new_centroids):
+            break
+        
+        centroids = new_centroids
+
+    return labels, centroids
+
+# Run K-Means
+final_labels, final_centroids = k_means(X, centroids)
+
+# Step 7: Plot final clusters and centroids
+colors = ['red', 'blue', 'green', 'yellow', 'black', 
+          'magenta', 'purple', 'grey', 'pink', 'brown']
+
+for i in range(n_clusters):
+    plt.scatter(X[final_labels == i, 0], X[final_labels == i, 1], color=colors[i % len(colors)], s=30)
+
+# Plot final centroids
+plt.scatter(final_centroids[:, 0], final_centroids[:, 1], color='black', marker='x', s=200)
+plt.title('Final Clusters and Centroid Positions')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.show()
