@@ -499,4 +499,472 @@ LP001097,Male,No,1,Graduate,Yes,4692,0.0,106.0,360.0,1.0,Rural,N
 '''
 
 
+###problem 2  (K-Mean Clusstering)
+'''
+Write a python program to implement the K-Means clustering algorithm, as per the following details
+a. Use the 'make_blobs' function to create a 2-dimensional data set containing 1000 data points,
+b. Number of clusters is the number of zeros in your ID
+c. Display the dataset using a scatter plot [output-1]-
+d. Initialize the centroids as the equal partitioning points of the range along each dimension le, if the minimum and maximum values along a dimension are -1 and +15 then the centroids will be placed at 3, 7 and 11.
+e. Plot the initial position of the centroids [output-2]
+f. Keep on iterating until not a single data point is getting shifted from one cluster to other.
+g. Plot the initial position of the centroids [output-3]
+'''
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
+
+# Step 1: Create a 2D dataset with 1000 data points
+n_samples = 1000
+X, _ = make_blobs(n_samples=n_samples, centers=3, cluster_std=1.0, random_state=42)
+
+# Step 2: Number of clusters (replace 'your_id' with your actual ID)
+# For example, if your ID has two zeros, set n_clusters = 2
+n_clusters = 2  # Change this according to the number of zeros in your ID
+
+# Step 3: Display the dataset using a scatter plot
+plt.scatter(X[:, 0], X[:, 1], s=30)
+plt.title('Generated Data Points')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.show()
+
+# Step 4: Initialize centroids
+min_val = X.min(axis=0)
+max_val = X.max(axis=0)
+centroids = np.linspace(min_val, max_val, n_clusters)
+
+# Step 5: Plot the initial position of the centroids
+plt.scatter(X[:, 0], X[:, 1], s=30)
+plt.scatter(centroids[:, 0], centroids[:, 1], color='red', marker='x', s=200)
+plt.title('Initial Centroid Positions')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.show()
+
+# Step 6: K-Means Algorithm
+def k_means(X, centroids):
+    while True:
+        # Assign clusters based on closest centroid
+        distances = np.linalg.norm(X[:, np.newaxis] - centroids, axis=2)
+        labels = np.argmin(distances, axis=1)
+
+        # Calculate new centroids
+        new_centroids = np.array([X[labels == k].mean(axis=0) for k in range(n_clusters)])
+
+        # Check for convergence (if centroids do not change)
+        if np.all(centroids == new_centroids):
+            break
+        
+        centroids = new_centroids
+
+    return labels, centroids
+
+# Run K-Means
+final_labels, final_centroids = k_means(X, centroids)
+
+# Step 7: Plot final clusters and centroids
+colors = ['red', 'blue', 'green', 'yellow', 'black', 
+          'magenta', 'purple', 'grey', 'pink', 'brown']
+
+for i in range(n_clusters):
+    plt.scatter(X[final_labels == i, 0], X[final_labels == i, 1], color=colors[i % len(colors)], s=30)
+
+# Plot final centroids
+plt.scatter(final_centroids[:, 0], final_centroids[:, 1], color='black', marker='x', s=200)
+plt.title('Final Clusters and Centroid Positions')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.show()
+
+
+
+###(Local minima) Gradient Descent.py
+'''
+Write a python program to find a local minima by using gradient descent technique, as per the following
+details: a. The function to use is y = x^2 - 4x + C, where C is the sum of the digits of your ID, e.g., if your ID is
+211001001176, then the value of C = 20. 
+b. Plot the graph of the above function. For plotting, the initial data points can be taken as x = [-4,-3,- 2, -1, 0, 1, 2, 3, 4, 5, 6, 7] [output-1]
+c. Plot the results of the following runs:
+i. start_point(S) = 10, lambda(L) = 0.01, no. of iterations(N) = 500 [output-2] ii. start_point(S) = 10, lambda(L) = 0.1, no. of iterations(N) = 500 [output-3
+'''
+Solution:
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# User ID (replace with your actual ID)
+user_id = "211001001176"  # Example ID
+C = sum(map(int, user_id))  # Sum of digits of ID
+
+# Define the function y = x^2 - 4x + C and its derivative
+def func(x):
+    return x**2 - 4*x + C
+
+def derivative(x):
+    return 2*x - 4
+
+# Step b: Plot the function
+x_values = np.linspace(-4, 7, 100)
+y_values = func(x_values)
+
+plt.plot(x_values, y_values, label="y = x^2 - 4x + C")
+plt.scatter(np.arange(-4, 8), func(np.arange(-4, 8)), color="red", label="Initial Points")
+plt.title("Function Plot")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.legend()
+plt.grid(True)
+plt.show()  # Output-1
+
+# Gradient Descent Implementation
+def gradient_descent(start_point, learning_rate, iterations):
+    x = start_point
+    path = [x]
+    for _ in range(iterations):
+        grad = derivative(x)
+        x -= learning_rate * grad
+        path.append(x)
+    return x, path
+
+# Parameters for runs
+runs = [
+    {"S": 10, "L": 0.01, "N": 500, "label": "Run 1: L=0.01, N=500"},
+    {"S": 10, "L": 0.1, "N": 500, "label": "Run 2: L=0.1, N=500"}
+]
+
+# Perform Gradient Descent for each run
+for i, run in enumerate(runs, start=2):
+    final_x, path = gradient_descent(run["S"], run["L"], run["N"])
+    path_y = func(np.array(path))
+    
+    # Plot the results
+    plt.plot(x_values, y_values, label="y = x^2 - 4x + C")
+    plt.scatter(path, path_y, color="orange", s=10, label="Gradient Descent Path")
+    plt.scatter(final_x, func(final_x), color="red", label="Local Minima")
+    plt.title(f"Gradient Descent Results ({run['label']})")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.legend()
+    plt.grid(True)
+    plt.show()  # Output-2, Output-3 (as per runs)
+
+
+### Linear Regression(0)
+'''
+bda(L) 0
+
+a. Generate 10 random values between 1 to 50 as x1, x2,..., x10
+
+b. Generate 10 random values between 100 to 200 as y1, y2, ..., y10
+
+c. Plot the points (x1, y1), (x2, y2), ..., (x10, y10) [output-1]
+
+d. Fit a regression line using the library of scikit_learn and plot the line along with the points [output-2]
+
+e. Display the y value of a data point whose x value is 60 [output-3]
+'''
+Solution:
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+
+# a. Generate 10 random values between 1 to 50 as x1, x2, ..., x10
+x = np.random.randint(1, 51, 10)
+
+# b. Generate 10 random values between 100 to 200 as y1, y2, ..., y10
+y = np.random.randint(100, 201, 10)
+
+# c. Plot the points (x1, y1), (x2, y2), ..., (x10, y10)
+plt.scatter(x, y, color='blue', label='Data points')
+plt.title('Scatter Plot of Data Points')
+plt.xlabel('X values')
+plt.ylabel('Y values')
+plt.legend()
+plt.show()
+
+# d. Fit a regression line using scikit-learn and plot the line along with the points
+x_reshaped = x.reshape(-1, 1)  # Reshape x to be a 2D array for the model
+model = LinearRegression()
+model.fit(x_reshaped, y)
+
+# Predict y values using the model
+y_pred = model.predict(x_reshaped)
+
+# Plotting the points and the regression line
+plt.scatter(x, y, color='blue', label='Data points')
+plt.plot(x, y_pred, color='red', label='Regression Line')
+plt.title('Regression Line and Data Points')
+plt.xlabel('X values')
+plt.ylabel('Y values')
+plt.legend()
+plt.show()
+
+# e. Display the y value for a data point with x = 60
+x_new = np.array([[60]])  # New data point for which we want to predict y
+y_new = model.predict(x_new)
+
+# Output the predicted y value
+print(f"The predicted y value for x = 60 is: {y_new[0]}")
+
+
+
+### Question 1(IRIS data)
+''' 
+ Load IRIS data from the SKLearn library
+
+ure:.
+
+2. List down the feature names and their range of values [output-1]
+
+3. List down the class names and the number of instances in each class [output-2]
+
+4. Normalize the data
+
+5. Split the data in 60-40 proportion
+
+6. Use the
+
+a. K Nearest Neighbour-classifier to classify the test data with K = 1
+
+b. Fit a Gaussian Naïve Bayes classifier model on the training data and classify the test data
+
+C. Fit a Decision Tree classifier model on the training data and classify the test data
+
+d. Fit a MLP classifier (one hidden layer with 8 nodes) model on the training data and classify the test data
+
+7. Print the confusion matrix [output-3]
+
+'''
+import numpy as np
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import confusion_matrix, classification_report
+
+# Step 1: Load IRIS data
+iris = load_iris()
+X = iris.data  # Features
+y = iris.target  # Labels
+feature_names = iris.feature_names
+class_names = iris.target_names
+
+# Step 2: List feature names and their range of values
+print("Feature Names and Ranges [Output-1]:")
+for i, feature in enumerate(feature_names):
+    feature_min = X[:, i].min()
+    feature_max = X[:, i].max()
+    print(f"{feature}: Min = {feature_min}, Max = {feature_max}")
+
+# Step 3: List class names and number of instances
+print("\nClass Names and Instance Counts [Output-2]:")
+for i, class_name in enumerate(class_names):
+    print(f"{class_name}: {np.sum(y == i)} instances")
+
+# Step 4: Normalize the data
+scaler = MinMaxScaler()
+X_normalized = scaler.fit_transform(X)
+
+# Step 5: Split the data (60% training, 40% testing)
+X_train, X_test, y_train, y_test = train_test_split(X_normalized, y, test_size=0.4, random_state=42)
+
+# Step 6a: K Nearest Neighbour Classifier (K=1)
+knn = KNeighborsClassifier(n_neighbors=1)
+knn.fit(X_train, y_train)
+knn_predictions = knn.predict(X_test)
+
+# Step 6b: Gaussian Naïve Bayes Classifier
+gnb = GaussianNB()
+gnb.fit(X_train, y_train)
+gnb_predictions = gnb.predict(X_test)
+
+# Step 6c: Decision Tree Classifier
+dtc = DecisionTreeClassifier(random_state=42)
+dtc.fit(X_train, y_train)
+dtc_predictions = dtc.predict(X_test)
+
+# Step 6d: MLP Classifier (One hidden layer with 8 nodes)
+mlp = MLPClassifier(hidden_layer_sizes=(8,), max_iter=500, random_state=42)
+mlp.fit(X_train, y_train)
+mlp_predictions = mlp.predict(X_test)
+
+# Step 7: Print confusion matrices
+print("\nConfusion Matrices [Output-3]:")
+print("\nKNN Classifier:")
+print(confusion_matrix(y_test, knn_predictions))
+print("\nGaussian Naïve Bayes Classifier:")
+print(confusion_matrix(y_test, gnb_predictions))
+print("\nDecision Tree Classifier:")
+print(confusion_matrix(y_test, dtc_predictions))
+print("\nMLP Classifier:")
+print(confusion_matrix(y_test, mlp_predictions))
+
+
+### SVM
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+import seaborn as sns
+
+# Step 1: Create a 2D dataset with 1000 data points using make_blobs
+# Number of clusters is determined by the number of zeros in your ID. For example, if your ID has two zeros:
+n_clusters = 5  # Change this according to the number of zeros in your ID
+X, y = make_blobs(n_samples=1000, centers=n_clusters, n_features=2, random_state=42)
+
+# Step 2: Display the dataset using a scatter plot [output-1]
+plt.scatter(X[:, 0], X[:, 1], c=y, s=30, cmap='viridis')
+plt.title('Generated Dataset using make_blobs')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.colorbar(label='Cluster Label')
+plt.show()
+
+# Step 3: Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+# Step 4: Train the SVM model with a linear kernel
+clf_linear = SVC(kernel='linear')
+clf_linear.fit(X_train, y_train)
+
+# Step 5: Make predictions and evaluate the model
+y_pred_linear = clf_linear.predict(X_test)
+accuracy_linear = accuracy_score(y_pred_linear, y_test)
+print(f"Linear Kernel Accuracy: {accuracy_linear:.2f}")
+
+# Step 6: Visualization of results with Seaborn
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x=X[:, 0], y=X[:, 1], hue=y, palette='viridis', alpha=0.7)
+plt.title('Weight vs Length1 by Class')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.legend(title='Cluster Label')
+plt.show()
+
+
+### KNN
+import numpy as np 
+import pandas as pd 
+from sklearn.model_selection import train_test_split 
+from sklearn.neighbors import KNeighborsClassifier 
+from sklearn.datasets import make_blobs
+import matplotlib.pyplot as plt 
+import seaborn as sns
+import plotly.express as px
+
+# Step 1: Generate synthetic dataset
+X, y = make_blobs(n_samples=1000, centers=3, cluster_std=1.0, random_state=42)
+
+# Convert to DataFrame for easier handling
+df = pd.DataFrame(X, columns=['Length', 'Weight'])
+df['Last'] = y  # Assign cluster labels as the target variable
+
+# Display the first few rows of the DataFrame
+print(df.head())
+df.info()
+print(df.describe())
+
+# Step 2: Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(df[['Length', 'Weight']], df['Last'], test_size=0.2, random_state=3)
+
+# Step 3: Implement KNN and find the best k
+best_k = 0
+best_score = 0
+s = len(X_train) - 1
+s = min(s, len(X_train))
+
+for k in range(2, s):
+    knn = KNeighborsClassifier(n_neighbors=k)
+    knn.fit(X_train, y_train)
+    current_score = knn.score(X_test, y_test)
+    
+    if current_score > best_score:
+        best_score = current_score
+        best_k = k
+
+print(f"For {best_k} neighbors, accuracy is {best_score * 100:.2f}%")
+
+# Step 4: Visualize the data using Seaborn
+plt.figure(figsize=(10, 6))
+sns.scatterplot(data=df, x='Length', y='Weight', hue='Last', alpha=0.7)
+plt.title('Seaborn Scatter Plot of Generated Data')
+plt.show()
+
+# Step 5: Visualize the data using Plotly (3D scatter plot)
+fig = px.scatter_3d(df, x='Length', y='Weight', z='Last', color='Last')
+fig.update_layout(title='Plotly 3D Scatter Plot of Generated Data')
+fig.show()
+
+### Decissio Tree
+import numpy as np
+import pandas as pd
+from sklearn.datasets import make_blobs
+from sklearn.metrics import confusion_matrix, accuracy_score
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn import tree
+
+# Step 1: Generate synthetic dataset
+X, y = make_blobs(n_samples=10000, centers=3, cluster_std=1.0, random_state=42)
+
+# Convert to DataFrame for easier handling
+df = pd.DataFrame(X, columns=['Feature1', 'Feature2'])
+df['Class'] = y  # Assign cluster labels as the target variable
+
+# Display the first few rows of the DataFrame
+print(df.head())
+df.info()
+print(df.describe())
+
+# Step 2: Prepare features and target variable
+X = df.iloc[:, :-1]  # Features (all columns except 'Class')
+y = df['Class']       # Target variable ('Class')
+
+# Step 3: Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=100)
+print(f"Training set shape: {X_train.shape}")
+print(f"Testing set shape: {X_test.shape}")
+
+# Step 4: Train the Decision Tree Classifier
+dt = DecisionTreeClassifier(max_depth=3)
+dt.fit(X_train, y_train)
+
+# Step 5: Plot the Decision Tree with adjustments for clarity
+plt.figure(figsize=(20, 12))  # Increase figure size for better visibility
+_ = tree.plot_tree(dt,
+                   feature_names=X.columns.tolist(),
+                   class_names=['Class 0', 'Class 1', 'Class 2'],
+                   filled=True,
+                   rounded=True,
+                   fontsize=12)  # Adjust font size for better readability
+
+plt.title('Decision Tree Visualization')
+plt.show()
+
+# Step 6: Make predictions and evaluate the model
+y_pred = dt.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy * 100:.2f}%")
+
+# Step 7: Confusion Matrix
+cm = confusion_matrix(y_test, y_pred)
+print(f"Confusion Matrix: \n{cm}")
+
+# Step 8: Visualize the Confusion Matrix using Seaborn
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['Class 0', 'Class 1', 'Class 2'], yticklabels=['Class 0', 'Class 1', 'Class 2'])
+plt.title('Confusion Matrix')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
+
 
